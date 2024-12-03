@@ -1,10 +1,12 @@
-import Info from "./components/Info.jsx";
+import ChargeWithoutPriceConcern from "./components/ChargeWithoutPriceConcern.jsx";
+import Discharge from "./components/Discharge.jsx";
 
 function App() {
 
   return (
     <>
-        < Info/>
+        < ChargeWithoutPriceConcern />
+        < Discharge />
         {/*@app.route('/')*/}
         {/*@app.route('/info', methods=['GET'])*/}
         {/*@app.route('/baseload', methods=['GET'])*/}

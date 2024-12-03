@@ -1,25 +1,56 @@
-import {API_BASE_URL} from "../config.js";
+import { useState, useEffect } from 'react';
+import { API_BASE_URL } from "../config.js";
 
-function Info(){
+function Info() {
+    const [info, setInfo] = useState(null);
 
-    function getInfo(){
-            fetch(`${API_BASE_URL}/info`, {
+    useEffect(() => {
+        function getInfo() {
+            const infoPromise = fetch(`${API_BASE_URL}/info`, {
                 method: 'get',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-            })
-                .then(data => {
-                    console.log('Success:', data);
-                })
-                .catch(error => console.error('Error updating character:', error));
-    }
+            }).then(response => response.json());
 
-    return(
+            const chargePromise = fetch(`${API_BASE_URL}/charge`, {
+                method: 'get',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            }).then(response => response.json());
+
+            Promise.all([infoPromise, chargePromise])
+                .then(([infoData, chargeData]) => {
+                    setInfo({
+                        ...infoData,
+                        batteryCapacity: chargeData, // eller vad ditt svar innehåller
+                    });
+                })
+                .catch(error => console.error('Error fetching info or charge:', error));
+        }
+
+        // Hämta information vid första renderingen
+        getInfo();
+
+        // Sätt ett intervall för att hämta information regelbundet
+        const intervalId = setInterval(getInfo, 1000); // Varje sekund
+
+        // Rensa intervallet när komponenten avmonteras
+        return () => clearInterval(intervalId);
+    }, []); // Tom array betyder att effekten körs en gång vid montering
+
+    return (
         <>
-        <button className="infoBtn" onClick={getInfo}>Get info</button>
+            {info && (
+                <div>
+                    <p>Time: {info.sim_time_hour}:{info.sim_time_min}</p>
+                    <p>Base Current Load: {info.base_current_load}</p>
+                    <p>Battery Capacity: {info.batteryCapacity}%</p>
+                </div>
+            )}
         </>
-    )
+    );
 }
 
-export default Info
+export default Info;
