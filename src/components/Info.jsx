@@ -30,8 +30,6 @@ function Info() {
                 .catch(error => console.error('Error fetching info or charge:', error));
         }
 
-        getInfo();
-
         const intervalId = setInterval(getInfo, 1000);
 
         return () => clearInterval(intervalId);

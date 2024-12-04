@@ -1,7 +1,8 @@
 import {API_BASE_URL} from "../config.js";
 import { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 
-function EconomicCharge() {
+function EconomicCharge({ selectedOption }) {
     const [baseload, setBaseload] = useState(null);
     const [price, setPrice] = useState(null);
     const [bestHours, setBestHours] = useState([]);
@@ -27,20 +28,23 @@ function EconomicCharge() {
             .then(data => setPrice(data));
     }, [])
 
-    function chargeWhenCheap() {
+    useEffect(() => {
+        if (baseload && price) {
+            const usedCapacity = 3.6;
+            let eligibleHours = [];
 
-        const usedCapacity = 3.6;
-        let eligibleHours = [];
-
-        for (let i = 0; i < baseload.length; i++) {
-            if (baseload[i] < usedCapacity) {
-                eligibleHours.push({ hour: i, price: price[i] });
+            for (let i = 0; i < baseload.length; i++) {
+                if (baseload[i] < usedCapacity) {
+                    eligibleHours.push({hour: i, price: price[i]});
+                }
             }
-        }
 
-        eligibleHours.sort((a, b) => a.price - b.price);
-        setBestHours(eligibleHours.slice(0, 4));
-    }
+            eligibleHours.sort((a, b) => a.price - b.price);
+            setBestHours(eligibleHours.slice(0, 4));
+            console.log("eligible hours: " + JSON.stringify(eligibleHours, null, 2));
+            console.log("best hours: " + JSON.stringify(bestHours, null, 2));
+        }
+    }, [baseload, price]);
 
     useEffect(() => {
         const intervalId = setInterval(() => {
@@ -57,7 +61,8 @@ function EconomicCharge() {
 }, []);
 
     useEffect(() => {
-        if (simTime !== null) {
+
+        if (selectedOption === 'ecoCharging') {
             fetch(`${API_BASE_URL}/charge`, {
                 method: 'GET',
                 headers: {
@@ -68,7 +73,7 @@ function EconomicCharge() {
                 .then(batteryCapacity => {
                     const isBestHour = bestHours.some(hour => hour.hour === simTime);
 
-                    if (isBestHour && batteryCapacity < 80) {
+                    if (isBestHour && batteryCapacity < 75) {
                         console.log("Charging at hour: " + simTime);
                         fetch(`${API_BASE_URL}/charge`, {
                             method: 'POST',
@@ -93,12 +98,15 @@ function EconomicCharge() {
                     }
                 });
         }
-    }, [simTime, bestHours]);
+    }, [simTime, bestHours, selectedOption]);
 
-    return (
-        <>
-            <button className="economicChargeBtn" onClick={chargeWhenCheap}>Economic charge</button>
-        </>
-    );
-}
+        return (
+            <></>
+        );
+    }
+
+EconomicCharge.propTypes = {
+    selectedOption: PropTypes.string.isRequired,
+};
+
 export default EconomicCharge;

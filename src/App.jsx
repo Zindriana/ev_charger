@@ -1,4 +1,4 @@
-//import ChargeWithoutPriceConcern from "./components/ChargeWithoutPriceConcern.jsx";
+import ChargeWithoutPriceConcern from "./components/ChargeWithoutPriceConcern.jsx";
 import Discharge from "./components/Discharge.jsx";
 import Info from "./components/Info.jsx";
 import RadioButtonComponent from "./components/RadioButtonsComponent.jsx";
@@ -15,7 +15,8 @@ function App() {
               selectedOption={selectedOption}
               onChange={setSelectedOption}
           />
-          <EconomicCharge selectedOption={selectedOption} />
+          < EconomicCharge selectedOption={selectedOption} />
+          < ChargeWithoutPriceConcern selectedOption={selectedOption} />
           < Discharge/>
 
       </>

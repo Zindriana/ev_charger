@@ -1,7 +1,8 @@
 import {API_BASE_URL} from "../config.js";
 import {useEffect, useState} from "react";
+import PropTypes from "prop-types";
 
-function ChargeWithoutPriceConcern() {
+function ChargeWithoutPriceConcern({ selectedOption }) {
 
     const [baseload, setBaseload] = useState(null);
     const [simTime, setSimTime] = useState(null);
@@ -17,20 +18,23 @@ function ChargeWithoutPriceConcern() {
             .then(data => setBaseload(data));
     }, []);
 
-    function chargeWithoutPrice() {
+    useEffect( () => {
+        if (baseload) {
+            const usedCapacity = 3.6;
+            let eligibleHours = [];
 
-        const usedCapacity = 3.6;
-        let eligibleHours = [];
-
-        for (let i = 0; i < baseload.length; i++) {
-            if (baseload[i] < usedCapacity) {
-                eligibleHours.push({ hour: i});
+            for (let i = 0; i < baseload.length; i++) {
+                if (baseload[i] < usedCapacity) {
+                    eligibleHours.push({hour: i, available_kW: baseload[i]});
+                }
             }
-        }
 
-        eligibleHours.sort((a, b) => a.hour - b.hour);
-        setBestHours(eligibleHours.slice(0, 4));
-    }
+            eligibleHours.sort((a, b) => a.available_kW - b.available_kW);
+            setBestHours(eligibleHours.slice(0, 4));
+            console.log("eligible hours: " + JSON.stringify(eligibleHours, null, 2));
+            console.log("best hours: " + JSON.stringify(bestHours, null, 2));
+        }
+    }, [baseload]);
 
     useEffect(() => {
         const intervalId = setInterval(() => {
@@ -43,11 +47,11 @@ function ChargeWithoutPriceConcern() {
                 .then(data => setSimTime(data.sim_time_hour));
         }, 900);
 
-        return () => clearInterval(intervalId); // Rensar intervallet vid unmount
+        return () => clearInterval(intervalId);
     }, []);
 
     useEffect(() => {
-        if (simTime !== null) {
+        if (selectedOption === 'ableCharging')
             fetch(`${API_BASE_URL}/charge`, {
                 method: 'GET',
                 headers: {
@@ -58,7 +62,7 @@ function ChargeWithoutPriceConcern() {
                 .then(batteryCapacity => {
                     const isBestHour = bestHours.some(hour => hour.hour === simTime);
 
-                    if (isBestHour && batteryCapacity < 80) { // Kontrollera om batterikapaciteten är under 80%
+                    if (isBestHour && batteryCapacity < 75) {
                         console.log("Charging at hour: " + simTime);
                         fetch(`${API_BASE_URL}/charge`, {
                             method: 'POST',
@@ -82,14 +86,15 @@ function ChargeWithoutPriceConcern() {
                             .then(data => console.log(data));
                     }
                 });
-        }
-    }, [simTime, bestHours]); // Triggar på ändringar i simTime och bestHours
 
+    }, [simTime, bestHours, selectedOption ]);
+
+    ChargeWithoutPriceConcern.propTypes = {
+        selectedOption: PropTypes.string.isRequired,
+    };
 
 return (
-    <>
-        <button className="justChargeBtn" onClick={chargeWithoutPrice}>Charge when able</button>
-    </>
+    <></>
 );
 }
 
