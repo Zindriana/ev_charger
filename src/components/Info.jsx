@@ -24,7 +24,7 @@ function Info() {
                 .then(([infoData, chargeData]) => {
                     setInfo({
                         ...infoData,
-                        batteryCapacity: chargeData, // eller vad ditt svar innehåller
+                        batteryCapacity: chargeData,
                     });
                 })
                 .catch(error => console.error('Error fetching info or charge:', error));
@@ -34,11 +34,11 @@ function Info() {
         getInfo();
 
         // Sätt ett intervall för att hämta information regelbundet
-        const intervalId = setInterval(getInfo, 1000); // Varje sekund
+        const intervalId = setInterval(getInfo, 2000);
 
         // Rensa intervallet när komponenten avmonteras
         return () => clearInterval(intervalId);
-    }, []); // Tom array betyder att effekten körs en gång vid montering
+    }, []);
 
     return (
         <>
