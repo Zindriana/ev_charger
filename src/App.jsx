@@ -1,22 +1,23 @@
-import ChargeWithoutPriceConcern from "./components/ChargeWithoutPriceConcern.jsx";
+//import ChargeWithoutPriceConcern from "./components/ChargeWithoutPriceConcern.jsx";
 import Discharge from "./components/Discharge.jsx";
-import EconomicCharge from "./components/EconomicCharge.jsx";
 import Info from "./components/Info.jsx";
+import RadioButtonComponent from "./components/RadioButtonsComponent.jsx";
+import React, { useState } from 'react';
+import EconomicCharge from "./components/EconomicCharge.jsx";
 
 function App() {
+    const [selectedOption, setSelectedOption] = useState('');
 
   return (
       <>
           < Info/><p></p>
-          < ChargeWithoutPriceConcern/><p></p>
-          < EconomicCharge/><p></p>
+          <RadioButtonComponent
+              selectedOption={selectedOption}
+              onChange={setSelectedOption}
+          />
+          <EconomicCharge selectedOption={selectedOption} />
           < Discharge/>
-          {/*@app.route('/')*/}
-          {/*@app.route('/info', methods=['GET'])*/}
-          {/*@app.route('/baseload', methods=['GET'])*/}
-          {/*@app.route('/priceperhour', methods=['GET'])*/}
-          {/*@app.route('/charge', methods=['POST', 'GET'])*/}
-          {/*@app.route('/discharge', methods=['POST', 'GET'])*/}
+
       </>
   )
 }

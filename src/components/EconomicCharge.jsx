@@ -29,11 +29,11 @@ function EconomicCharge() {
 
     function chargeWhenCheap() {
 
-        const x = 3.6;
+        const usedCapacity = 3.6;
         let eligibleHours = [];
 
         for (let i = 0; i < baseload.length; i++) {
-            if (baseload[i] < x) {
+            if (baseload[i] < usedCapacity) {
                 eligibleHours.push({ hour: i, price: price[i] });
             }
         }
@@ -50,15 +50,14 @@ function EconomicCharge() {
                 'Content-Type': 'application/json',
             },
         }).then(response => response.json())
-            .then(data => setSimTime(data.sim_time_hour)); // Uppdaterar den simulerade tiden
-    }, 900); // Uppdaterar varje minut
+            .then(data => setSimTime(data.sim_time_hour));
+    }, 900);
 
-    return () => clearInterval(intervalId); // Rensar intervallet vid unmount
+    return () => clearInterval(intervalId);
 }, []);
 
     useEffect(() => {
         if (simTime !== null) {
-            // Hämta nuvarande batterikapacitet
             fetch(`${API_BASE_URL}/charge`, {
                 method: 'GET',
                 headers: {
@@ -69,7 +68,7 @@ function EconomicCharge() {
                 .then(batteryCapacity => {
                     const isBestHour = bestHours.some(hour => hour.hour === simTime);
 
-                    if (isBestHour && batteryCapacity < 80) { // Kontrollera om batterikapaciteten är under 80%
+                    if (isBestHour && batteryCapacity < 80) {
                         console.log("Charging at hour: " + simTime);
                         fetch(`${API_BASE_URL}/charge`, {
                             method: 'POST',
@@ -94,7 +93,7 @@ function EconomicCharge() {
                     }
                 });
         }
-    }, [simTime, bestHours]); // Triggar på ändringar i simTime och bestHours
+    }, [simTime, bestHours]);
 
     return (
         <>

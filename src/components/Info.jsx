@@ -30,13 +30,10 @@ function Info() {
                 .catch(error => console.error('Error fetching info or charge:', error));
         }
 
-        // Hämta information vid första renderingen
         getInfo();
 
-        // Sätt ett intervall för att hämta information regelbundet
-        const intervalId = setInterval(getInfo, 2000);
+        const intervalId = setInterval(getInfo, 1000);
 
-        // Rensa intervallet när komponenten avmonteras
         return () => clearInterval(intervalId);
     }, []);
 
