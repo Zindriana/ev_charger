@@ -32,7 +32,7 @@ function RadioButtonsComponent({ selectedOption, onChange }) {
                     checked={selectedOption === 'ableCharging'}
                     onChange={handleOptionChange}
                 />
-                Charge when able
+                Charge when high free capacity
             </label>
         </div>
     );

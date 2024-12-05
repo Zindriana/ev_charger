@@ -7,6 +7,7 @@ function ChargeWithoutPriceConcern({ selectedOption }) {
     const [baseload, setBaseload] = useState(null);
     const [simTime, setSimTime] = useState(null);
     const [bestHours, setBestHours] = useState([]);
+    //add a const for current batteryCapacity
 
     useEffect(() => {
         fetch(`${API_BASE_URL}/baseload`, {
@@ -31,8 +32,8 @@ function ChargeWithoutPriceConcern({ selectedOption }) {
 
             eligibleHours.sort((a, b) => a.available_kW - b.available_kW);
             setBestHours(eligibleHours.slice(0, 4));
-            console.log("eligible hours: " + JSON.stringify(eligibleHours, null, 2));
-            console.log("best hours: " + JSON.stringify(bestHours, null, 2));
+            console.log("eligible hours (capacity): " + JSON.stringify(eligibleHours, null, 2));
+            console.log("best hours (capacity): " + JSON.stringify(bestHours, null, 2));
         }
     }, [baseload]);
 
@@ -52,7 +53,8 @@ function ChargeWithoutPriceConcern({ selectedOption }) {
 
     useEffect(() => {
         if (selectedOption === 'ableCharging')
-            fetch(`${API_BASE_URL}/charge`, {
+            fetch(`${API_BASE_URL}/charge`, { //either delete this part and use the charge-data from
+                // the Info-component or at least move it outside of this useEffect and have it in their own useEffect
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -60,9 +62,12 @@ function ChargeWithoutPriceConcern({ selectedOption }) {
             })
                 .then(response => response.json())
                 .then(batteryCapacity => {
+                    //this const could be refactored, it is from early stage of testing
                     const isBestHour = bestHours.some(hour => hour.hour === simTime);
 
-                    if (isBestHour && batteryCapacity < 75) {
+                    if (isBestHour && batteryCapacity < 75) {//using 75% instead of 80% temporarily to avoid
+                        //a glitch that sometimes happens so that the charging continue for an hour, should be
+                        // fixed by having a separate check for batteryCapacity.
                         console.log("Charging at hour: " + simTime);
                         fetch(`${API_BASE_URL}/charge`, {
                             method: 'POST',

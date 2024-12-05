@@ -15,6 +15,7 @@ function App() {
               selectedOption={selectedOption}
               onChange={setSelectedOption}
           />
+          {/*economicCharge and ChargeWithoutPriceConcern could be refactored to avoid reduntant and duplicated code*/}
           < EconomicCharge selectedOption={selectedOption} />
           < ChargeWithoutPriceConcern selectedOption={selectedOption} />
           < Discharge/>

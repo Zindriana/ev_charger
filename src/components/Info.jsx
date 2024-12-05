@@ -13,6 +13,8 @@ function Info() {
                 },
             }).then(response => response.json());
 
+            //the info from the charge promise isn´t used anymore, either delete here or
+            // use it in some way instead of the charge fetch in the other components
             const chargePromise = fetch(`${API_BASE_URL}/charge`, {
                 method: 'get',
                 headers: {
